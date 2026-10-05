@@ -1,0 +1,21 @@
+name: papirglider
+services:
+  web:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:18081:80"
+    volumes:
+      - papirglider_levi:/usr/share/nginx/html:ro
+      - /opt/papirglider-docker/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+volumes:
+  papirglider_levi:
+    external: true
+    name: papirglider_levi

@@ -1,0 +1,25 @@
+# Secrets and local config. Never commit these.
+.env
+.env.*
+!.env.example
+vault.conf
+*.pem
+*.key
+*.p12
+id_rsa*
+id_ed25519*
+*.db
+*.sqlite
+*.sqlite3
+*.dump
+*.sql.gz
+mail-outbox/
+
+# Build and tool output
+node_modules/
+__pycache__/
+*.pyc
+.DS_Store
+
+# Editor and deploy backups
+*.bak*

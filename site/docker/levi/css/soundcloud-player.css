@@ -1,0 +1,255 @@
+/* Small, unobtrusive SoundCloud control shared by Laden and Lab'z. */
+.laden-sc-player {
+  position: fixed;
+  right: max(1rem, env(safe-area-inset-right));
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  z-index: 68;
+  width: 34px;
+  height: 34px;
+  pointer-events: none;
+  font: 500 11px/1 Inter, ui-sans-serif, system-ui, sans-serif;
+}
+.laden-sc-player__toggle {
+  pointer-events: auto;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid;
+  border-radius: 50%;
+  cursor: pointer;
+  opacity: .72;
+  transition: opacity 160ms ease, transform 160ms ease, border-color 160ms ease, background 160ms ease, color 160ms ease;
+}
+.laden-sc-player__toggle:hover,
+.laden-sc-player__toggle:focus-visible { opacity: 1; transform: translateY(-1px); outline: none; }
+.laden-sc-player__icon { font-size: 15px; line-height: 1; }
+.laden-sc-player__status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.laden-sc-player__embed { position: fixed; right: 0; bottom: 0; width: 8px; height: 8px; border: 0; opacity: .02; pointer-events: none; z-index: 1; }
+
+/* Laden business site: use the dark coal / teal site chrome. */
+.laden-sc-player--site .laden-sc-player__toggle {
+  border-color: rgba(158, 217, 211, .42);
+  color: var(--on-coal-accent, #9ed9d3);
+  background: rgba(20, 24, 22, .84);
+  box-shadow: 0 8px 22px rgba(20, 24, 22, .2), inset 0 1px 0 rgba(243, 248, 251, .08);
+}
+.laden-sc-player--site .laden-sc-player__toggle.is-on {
+  border-color: rgba(158, 217, 211, .78);
+  background: rgba(20, 24, 22, .94);
+  color: var(--on-coal-accent, #9ed9d3);
+}
+.laden-sc-player--site .laden-sc-player__toggle:focus-visible { outline: 2px solid var(--accent, #0e6e68); outline-offset: 3px; }
+
+/* Lab'z keeps its neon green / cyan treatment. */
+.laden-sc-player--lab .laden-sc-player__toggle {
+  border-color: rgba(0, 255, 157, .45);
+  color: #00ff9d;
+  background: rgba(5, 7, 10, .88);
+  box-shadow: 0 0 18px rgba(0, 255, 157, .12), inset 0 1px 0 rgba(0, 229, 255, .08);
+}
+.laden-sc-player--lab .laden-sc-player__toggle.is-on {
+  border-color: rgba(0, 255, 157, .9);
+  color: #00ff9d;
+  box-shadow: 0 0 22px rgba(0, 255, 157, .24);
+}
+.laden-sc-player--lab .laden-sc-player__toggle:focus-visible { outline: 2px solid #00e5ff; outline-offset: 3px; }
+@media (prefers-reduced-motion: no-preference) {
+  .laden-sc-player.is-on .laden-sc-player__toggle { animation: laden-sc-pulse 3.2s ease-in-out infinite; }
+  @keyframes laden-sc-pulse { 0%, 100% { opacity: .68; } 50% { opacity: .92; } }
+}
+
+
+/* Skarverakk demo: warm paper/acid-yellow detail on its dark stage. */
+.laden-sc-player--skarverakk .laden-sc-player__toggle {
+  border-color: rgba(226, 255, 58, .48);
+  color: #e2ff3a;
+  background: rgba(11, 11, 10, .9);
+  box-shadow: 0 8px 22px rgba(7, 7, 6, .28), inset 0 1px 0 rgba(244, 239, 230, .1);
+}
+.laden-sc-player--skarverakk .laden-sc-player__toggle.is-on {
+  border-color: rgba(226, 255, 58, .88);
+  color: #e2ff3a;
+}
+.laden-sc-player--skarverakk .laden-sc-player__toggle:focus-visible { outline: 2px solid #e2ff3a; outline-offset: 3px; }
+
+
+/* PapirGlider Klubben: warm paper and brown ink. */
+.laden-sc-player--papirglider .laden-sc-player__toggle {
+  border-color: rgba(139, 90, 60, .52);
+  color: #b9825b;
+  background: rgba(58, 37, 27, .88);
+  box-shadow: 0 8px 22px rgba(58, 37, 27, .22), inset 0 1px 0 rgba(246, 241, 232, .12);
+}
+.laden-sc-player--papirglider .laden-sc-player__toggle.is-on {
+  border-color: rgba(185, 130, 91, .86);
+  color: #d2a27e;
+}
+.laden-sc-player--papirglider .laden-sc-player__toggle:focus-visible {
+  outline: 2px solid #b9825b;
+  outline-offset: 3px;
+}
+
+/* Business site: the corner belongs to Caleb. The iframe stays alive off-screen. */
+.laden-sc-player--in-caleb {
+  left: -9999px;
+  right: auto;
+  width: 34px;
+  height: 34px;
+  opacity: 0.02;
+  pointer-events: none;
+}
+.laden-sc-player--in-caleb .laden-sc-player__toggle { display: none; }
+
+/* Phones: a 34px disc sitting on Skarverakk's Rockbot dock is too easy to miss,
+   and a delayed click reads as mute doing nothing. 48px, and lift it off the dock. */
+.laden-sc-player__toggle { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+@media (max-width: 760px) {
+  .laden-sc-player { width: 48px; height: 48px; }
+  .laden-sc-player__toggle { width: 48px; height: 48px; min-width: 48px; min-height: 48px; }
+  .laden-sc-player--skarverakk { bottom: calc(5.1rem + env(safe-area-inset-bottom)); }
+  .laden-sc-player--in-caleb { width: 34px; height: 34px; }
+}
+
+/* PapirGlider volume sits out beside the mute button, including on a phone
+   where hover never happens. Phones also skip pull-to-refresh so a reload
+   cannot throw the iframe away. */
+.laden-sc-player--papirglider .laden-sc-player__vol {
+  pointer-events: auto;
+  opacity: 1;
+  visibility: visible;
+}
+@media (hover: none) and (pointer: coarse) {
+  html, body { overscroll-behavior-y: none; }
+  .laden-sc-player--skarverakk .laden-sc-player__vol,
+  .laden-sc-player--papirglider .laden-sc-player__vol {
+    pointer-events: auto;
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+
+/* Skarverakk: volume and mute sit inside Råkky. The corner player stays off-screen. */
+.laden-sc-player--in-rakky {
+  left: -9999px;
+  right: auto;
+  width: 34px;
+  height: 34px;
+  opacity: 0.02;
+  pointer-events: none;
+}
+.laden-sc-player--in-rakky .laden-sc-player__toggle,
+.laden-sc-player--in-rakky .laden-sc-player__vol { display: none; }
+@media (max-width: 760px) {
+  .laden-sc-player--in-rakky {
+    width: 34px;
+    height: 34px;
+    bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+}
+.dock__open {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  min-height: 44px;
+}
+.rakky-sound {
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+}
+.rakky-sound__mute {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 36px;
+  min-width: 44px;
+  padding: 0 .4rem;
+  border: 1px solid currentColor;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  font-size: .8rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  line-height: 1;
+  cursor: pointer;
+}
+.rakky-sound__vol {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  min-width: 0;
+}
+.rakky-sound__vol input {
+  width: 92px;
+  height: 28px;
+  margin: 0;
+  accent-color: #111111;
+  background: transparent;
+  touch-action: manipulation;
+}
+.dock .rakky-sound__vol span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+.chat__head .rakky-sound {
+  margin: .2rem 0 .85rem;
+  padding: .45rem .55rem;
+  border: 1px solid rgba(244, 239, 230, .22);
+  background: #14110e;
+  color: #f4efe6;
+}
+.chat__head .rakky-sound__vol { flex: 1; }
+.chat__head .rakky-sound__vol span {
+  font-family: "Barlow Condensed", "Arial Narrow", Impact, sans-serif;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  font-size: .95rem;
+  color: #c9c2b6;
+}
+.chat__head .rakky-sound__vol input {
+  flex: 1;
+  width: auto;
+  accent-color: #e2ff3a;
+}
+.chat__head .rakky-sound__mute.is-on {
+  border-color: #e2ff3a;
+  color: #e2ff3a;
+}
+
+/* Collapsed Råkky: name + small music mark only. Sound controls open with the sheet. */
+.dock > .rakky-sound-slot,
+.dock .rakky-sound {
+  display: none !important;
+}
+.dock__open {
+  position: relative;
+  padding-right: .55rem;
+}
+.dock__open::after {
+  content: "\266A";
+  position: absolute;
+  top: -.05rem;
+  right: 0;
+  font-size: .72rem;
+  line-height: 1;
+  font-family: "Segoe UI Symbol", "Apple Symbols", "Noto Music", "DejaVu Sans", serif;
+  color: var(--bg, #0b0b0a);
+  opacity: .92;
+  pointer-events: none;
+  speak: never;
+}
